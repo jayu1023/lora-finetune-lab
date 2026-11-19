@@ -1,0 +1,36 @@
+{
+  "hyperparams": {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "rank": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "learning_rate": 0.0002,
+    "epochs": 3,
+    "batch_size": 4,
+    "grad_accum": 2,
+    "max_length": 512,
+    "warmup_ratio": 0.03,
+    "seed": 20261119
+  },
+  "device": "mps",
+  "dtype": "torch.bfloat16",
+  "platform": "macOS-26.5.2-arm64-arm-64bit (arm64)",
+  "trainable_params": 8798208,
+  "total_params": 502830976,
+  "trainable_pct": 1.7497,
+  "train_examples": 600,
+  "warmup_steps": 6,
+  "train_seconds": 2935.4,
+  "final_train_loss": 0.0253,
+  "peak_memory_gb": 1.04,
+  "adapter_bytes": 46668585
+}

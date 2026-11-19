@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+runs/
+.ipynb_checkpoints/
+
+# Adapter weights and eval artifacts ARE committed: a few MB, and they are the
+# evidence for the README. The HF cache and trainer checkpoints are not.

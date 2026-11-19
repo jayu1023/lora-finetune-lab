@@ -1,0 +1,23 @@
+name: ci
+
+# Only the fast, deterministic parts run in CI: the dataset generator, the
+# prompt/parsing contract, and the scoring maths. Training and evaluation need a
+# model download and a GPU, so they are not gated here — the notebook and the
+# committed eval artifacts are the evidence for those.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install pytest
+      - run: python src/make_dataset.py
+      - run: python -m pytest tests/test_dataset.py tests/test_scoring.py tests/test_prompts.py
