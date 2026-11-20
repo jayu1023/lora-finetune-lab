@@ -232,9 +232,13 @@ version of the result.
 - **No constrained-decoding baseline.** A grammar constraint gets 100% valid JSON
   with no training at all. It is not a competitor here (every condition already
   scores 1.00 on format) but it would be on a model that emits messier JSON.
-- **The adapter is not on the Hugging Face Hub.** That needs the repo owner's
-  write token. The push cell is in the notebook, commented, ready to run. The
-  adapter weights are committed to this repo instead.
+- **The adapter is not on the Hugging Face Hub.** That needs a write token belonging to
+  whoever owns the Hub account, so it was never run here. `src/push_to_hub.py` makes it one
+  command — it generates the model card from `training_card.json` and `evals/results.json`
+  rather than by hand, so the card cannot drift from what was measured, and it carries the
+  unflattering parts too (the 1.00 artifact, the `plan` collapse). Preview it with
+  `make push-dry`, which uploads nothing. The adapter weights are committed to this repo,
+  so nothing depends on the Hub existing.
 - **No LLM-judge or human evaluation.** Every metric is exact-match against
   programmatically generated labels.
 
