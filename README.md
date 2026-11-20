@@ -9,6 +9,9 @@ experiment produced a perfect 1.00 and the perfect score was an artifact**, and
 the repo now contains the harder split that exposed it, the diagnostic that
 explains it, and the honest number that replaced it.
 
+**Adapter on the Hub:** [`jayu1023/qwen2.5-0.5b-ticket-triage-lora`](https://huggingface.co/jayu1023/qwen2.5-0.5b-ticket-triage-lora) — 35 MB, with a
+model card generated from the measured results rather than written by hand.
+
 **Docs:** [`docs/EXPLAINER.md`](docs/EXPLAINER.md) — what LoRA is, what every
 hyperparameter costs, why the eval is built this way.
 [`docs/INTERVIEW_GUIDE.md`](docs/INTERVIEW_GUIDE.md) — how to present and defend it.
@@ -232,13 +235,12 @@ version of the result.
 - **No constrained-decoding baseline.** A grammar constraint gets 100% valid JSON
   with no training at all. It is not a competitor here (every condition already
   scores 1.00 on format) but it would be on a model that emits messier JSON.
-- **The adapter is not on the Hugging Face Hub.** That needs a write token belonging to
-  whoever owns the Hub account, so it was never run here. `src/push_to_hub.py` makes it one
-  command — it generates the model card from `training_card.json` and `evals/results.json`
-  rather than by hand, so the card cannot drift from what was measured, and it carries the
-  unflattering parts too (the 1.00 artifact, the `plan` collapse). Preview it with
-  `make push-dry`, which uploads nothing. The adapter weights are committed to this repo,
-  so nothing depends on the Hub existing.
+- **The adapter is on the Hub**: [`jayu1023/qwen2.5-0.5b-ticket-triage-lora`](https://huggingface.co/jayu1023/qwen2.5-0.5b-ticket-triage-lora),
+  pushed by the repo owner with `make push`. The card is generated from
+  `training_card.json` and `evals/results.json` rather than written by hand, so it cannot
+  drift from what was measured — and it carries the unflattering parts too (the 1.00
+  artifact, the `plan` collapse). The weights are also committed here, so nothing depends
+  on the Hub existing.
 - **No LLM-judge or human evaluation.** Every metric is exact-match against
   programmatically generated labels.
 

@@ -4,6 +4,12 @@ name: ci
 # prompt/parsing contract, and the scoring maths. Training and evaluation need a
 # model download and a GPU, so they are not gated here — the notebook and the
 # committed eval artifacts are the evidence for those.
+#
+# This job installs pytest and nothing else, which is why `score()` lives in
+# src/scoring.py rather than src/evaluate.py: evaluate.py imports torch at module
+# level and uses @torch.inference_mode() as a decorator, so it cannot be imported
+# at all without torch. Keeping the maths in a torch-free module is what makes
+# this job take seconds instead of pulling ~200MB per run.
 on:
   push:
     branches: [main]

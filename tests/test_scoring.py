@@ -1,6 +1,6 @@
 """The metrics. If these are wrong, every number in the README is wrong."""
 
-from src.evaluate import score
+from src.scoring import score
 from src.prompts import target_json
 
 LABEL = {"category": "api", "severity": "sev2", "plan": "business", "escalate": True}
