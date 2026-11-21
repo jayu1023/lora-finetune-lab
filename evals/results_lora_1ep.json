@@ -1,0 +1,377 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "device": "mps",
+  "splits": {
+    "test_seen": {
+      "lora": {
+        "predicted_distribution": {
+          "category": {
+            "api": 30,
+            "ingestion": 27,
+            "billing": 24,
+            "dashboards": 21,
+            "how_to": 13
+          },
+          "severity": {
+            "sev3": 48,
+            "sev2": 34,
+            "sev1": 33
+          },
+          "plan": {
+            "self_serve": 41,
+            "business": 38,
+            "enterprise": 36
+          },
+          "escalate": {
+            "False": 83,
+            "True": 32
+          }
+        },
+        "n": 115,
+        "json_lenient": 1.0,
+        "json_strict": 1.0,
+        "exact_match": 0.9739130434782609,
+        "field_accuracy": {
+          "category": 1.0,
+          "severity": 1.0,
+          "plan": 1.0,
+          "escalate": 0.9739130434782609
+        },
+        "field_accuracy_given_parsed": {
+          "category": 1.0,
+          "severity": 1.0,
+          "plan": 1.0,
+          "escalate": 0.9739130434782609
+        },
+        "parsed_rows": 115,
+        "median_prompt_tokens": 158,
+        "failures": [
+          {
+            "ticket": "Hi \u2014 we were charged twice this month. a major feature is unusable for a subset of our users. For context, our Business plan renews monthly.",
+            "expected": {
+              "category": "billing",
+              "severity": "sev2",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev2\",\"plan\":\"business\",\"escalate\":true}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Ticket: the webhook signature check keeps failing Impact: nothing works at all and it is affecting every customer we have Account: we upgrad",
+            "expected": {
+              "category": "api",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"api\",\"severity\":\"sev1\",\"plan\":\"business\",\"escalate\":false}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Ticket: events stopped arriving in the pipeline Impact: nothing works at all and it is affecting every customer we have Account: we pay mont",
+            "expected": {
+              "category": "ingestion",
+              "severity": "sev1",
+              "plan": "self_serve",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"ingestion\",\"severity\":\"sev1\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          }
+        ],
+        "condition": "lora",
+        "eval_seconds": 14.2
+      }
+    },
+    "test_unseen": {
+      "lora": {
+        "predicted_distribution": {
+          "category": {
+            "how_to": 33,
+            "api": 25,
+            "billing": 24,
+            "dashboards": 20,
+            "ingestion": 18
+          },
+          "severity": {
+            "sev2": 49,
+            "sev3": 40,
+            "sev1": 31
+          },
+          "plan": {
+            "business": 42,
+            "self_serve": 40,
+            "enterprise": 38
+          },
+          "escalate": {
+            "False": 90,
+            "True": 30
+          }
+        },
+        "n": 120,
+        "json_lenient": 1.0,
+        "json_strict": 1.0,
+        "exact_match": 0.95,
+        "field_accuracy": {
+          "category": 1.0,
+          "severity": 0.9916666666666667,
+          "plan": 0.9916666666666667,
+          "escalate": 0.9666666666666667
+        },
+        "field_accuracy_given_parsed": {
+          "category": 1.0,
+          "severity": 0.9916666666666667,
+          "plan": 0.9916666666666667,
+          "escalate": 0.9666666666666667
+        },
+        "parsed_rows": 120,
+        "median_prompt_tokens": 168,
+        "failures": [
+          {
+            "ticket": "Forwarding from our ops channel:  > How do we rotate our API key > Everything is down for all of our users  Adding that we are a Business pl",
+            "expected": {
+              "category": "how_to",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"how_to\",\"severity\":\"sev2\",\"plan\":\"business\",\"escalate\":false}",
+            "wrong_fields": [
+              "severity"
+            ]
+          },
+          {
+            "ticket": "Can someone look at this? Dashboard numbers do not match the export \u2014 and to be clear, production is fully broken right now. We are the acco",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev1\",\"plan\":\"business\",\"escalate\":true}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Can someone look at this? We cannot work out how to invite a teammate \u2014 and to be clear, it is a minor annoyance, nothing urgent. We are the",
+            "expected": {
+              "category": "how_to",
+              "severity": "sev3",
+              "plan": "enterprise",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"how_to\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "plan"
+            ]
+          },
+          {
+            "ticket": "Forwarding from our ops channel:  > We were charged twice this month > Production is fully broken right now  Adding that our Enterprise cont",
+            "expected": {
+              "category": "billing",
+              "severity": "sev1",
+              "plan": "enterprise",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev1\",\"plan\":\"enterprise\",\"escalate\":true}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: we were charged twice this month. Since then a major feature is unusable for a s",
+            "expected": {
+              "category": "billing",
+              "severity": "sev2",
+              "plan": "self_serve",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev2\",\"plan\":\"self_serve\",\"escalate\":true}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Forwarding from our ops channel:  > Pagination is returning duplicate rows > Nothing works at all and it is affecting every customer we have",
+            "expected": {
+              "category": "api",
+              "severity": "sev1",
+              "plan": "self_serve",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"api\",\"severity\":\"sev1\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          }
+        ],
+        "condition": "lora",
+        "eval_seconds": 14.6
+      }
+    },
+    "test_hard": {
+      "lora": {
+        "predicted_distribution": {
+          "category": {
+            "dashboards": 27,
+            "api": 25,
+            "billing": 24,
+            "how_to": 18,
+            "ingestion": 16,
+            "telemetry": 10
+          },
+          "severity": {
+            "sev2": 47,
+            "sev3": 44,
+            "sev1": 29
+          },
+          "plan": {
+            "self_serve": 119,
+            "business": 1
+          },
+          "escalate": {
+            "False": 97,
+            "True": 23
+          }
+        },
+        "n": 120,
+        "json_lenient": 1.0,
+        "json_strict": 1.0,
+        "exact_match": 0.225,
+        "field_accuracy": {
+          "category": 0.9166666666666666,
+          "severity": 0.85,
+          "plan": 0.35,
+          "escalate": 0.9083333333333333
+        },
+        "field_accuracy_given_parsed": {
+          "category": 0.9166666666666666,
+          "severity": 0.85,
+          "plan": 0.35,
+          "escalate": 0.9083333333333333
+        },
+        "parsed_rows": 120,
+        "median_prompt_tokens": 175,
+        "failures": [
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: could you point us at the documentation for adding a colleague. Since then trivi",
+            "expected": {
+              "category": "how_to",
+              "severity": "sev3",
+              "plan": "enterprise",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"how_to\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "plan"
+            ]
+          },
+          {
+            "ticket": "Forwarding from our ops channel:  > There is a discrepancy between the statement and what we expected to pay > Nobody in the organisation ca",
+            "expected": {
+              "category": "billing",
+              "severity": "sev1",
+              "plan": "self_serve",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "severity"
+            ]
+          },
+          {
+            "ticket": "Can someone look at this? A tile we built last month now comes up empty \u2014 and to be clear, purely a tidiness matter, nobody is held up. We a",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev3",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "plan"
+            ]
+          },
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: a tile we built last month now comes up empty. Since then trivial, and it affect",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev3",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "plan"
+            ]
+          },
+          {
+            "ticket": "Forwarding from our ops channel:  > Signature verification on our callbacks fails every time > An important workflow is unusable although ot",
+            "expected": {
+              "category": "api",
+              "severity": "sev2",
+              "plan": "enterprise",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"api\",\"severity\":\"sev1\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "severity",
+              "plan",
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: a tile we built last month now comes up empty. Since then purely a tidiness matt",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev3",
+              "plan": "enterprise",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "plan"
+            ]
+          },
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: the collector appears to be discarding a portion of what we emit. Since then an ",
+            "expected": {
+              "category": "ingestion",
+              "severity": "sev2",
+              "plan": "enterprise",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"ingestion\",\"severity\":\"sev2\",\"plan\":\"self_serve\",\"escalate\":true}",
+            "wrong_fields": [
+              "plan"
+            ]
+          },
+          {
+            "ticket": "Forwarding from our ops channel:  > Our finance team is disputing a line item on the latest receipt > Nobody in the organisation can do anyt",
+            "expected": {
+              "category": "billing",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "severity",
+              "plan"
+            ]
+          }
+        ],
+        "condition": "lora",
+        "eval_seconds": 14.8
+      }
+    }
+  }
+}

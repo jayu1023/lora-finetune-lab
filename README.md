@@ -194,6 +194,58 @@ collapsed. One epoch was likely the right call and is not what was run.
 
 ---
 
+## QLoRA vs LoRA, and 1 epoch vs 3
+
+```bash
+make train                              # LoRA, bf16 base
+python src/train_lora.py --quantize 4bit --epochs 1   # QLoRA, NF4 + double quant
+```
+
+`--quantize 4bit` is the real QLoRA recipe: NF4 4-bit frozen base, double quantisation,
+bf16 compute, `prepare_model_for_kbit_training`. Verified loading as `Linear4bit` layers on
+Apple MPS — 451 MB footprint against ~1 GB for bf16.
+
+### Matched 1-epoch comparison, `test_hard`
+
+| run | exact | category | severity | plan | escalate | peak mem | final loss |
+|---|---|---|---|---|---|---|---|
+| **LoRA 1 epoch** | **0.23** | **0.92** | **0.85** | 0.35 | **0.91** | 1.04 GB | 0.0684 |
+| QLoRA 1 epoch | 0.19 | 0.76 | 0.78 | 0.35 | 0.80 | **0.81 GB** | 0.0624 |
+| LoRA 3 epochs | 0.23 | 0.76 | 0.83 | 0.33 | 0.82 | 1.04 GB | 0.0253 |
+
+**Finding 1 — 4-bit cost accuracy here, and saved memory that was not scarce.**
+QLoRA lost 4 points of exact match and 16 points of category accuracy against an otherwise
+identical LoRA run, for 22% less peak memory. On a 0.5B model that is a bad trade: nothing
+was close to not fitting. QLoRA earns its place when the base model *would not load
+otherwise* — at 7B+ on a single consumer GPU — not as a default. Measuring it is the only
+way to know which case you are in.
+
+Note the training losses point the other way (0.0624 vs 0.0684). **Lower training loss, worse
+held-out accuracy** is the ordinary shape of the thing: loss on the training distribution is
+not the quantity anyone cares about.
+
+**Finding 2 — 1 epoch generalises better than 3, which confirms a hypothesis this repo had
+only asserted.** The 3-epoch README already said "loss hit 2e-4 before epoch 2, so epoch 3
+bought memorisation rather than capability — plausibly part of why `plan` collapsed." That
+was a guess. Trained for 1 epoch, the same config scores **category 0.92 against 0.76** and
+**escalate 0.91 against 0.82** on held-out phrasing, with identical exact match. Training
+loss is 27x *higher* (0.068 vs 0.0025) and the model is *better*. The extra epochs were
+fitting the training phrasings.
+
+`plan` stays at 0.33–0.35 in all three runs — still a near-constant `self_serve`. That
+failure is in the data, not the training budget, which is consistent with the diagnosis and
+is why more epochs and fewer epochs both fail to fix it.
+
+### Why there is no timing claim here
+
+QLoRA ran in 197 s and LoRA in 892 s, and **that comparison is not reported as a result**,
+because the runs were not thermally matched — QLoRA ran on a cool machine and LoRA
+immediately after it. Sustained MPS throughput on this M4 falls roughly 15x under load, which
+is far larger than any real difference between the methods. A fair timing comparison needs
+alternating runs with cooldowns, which was not done.
+
+---
+
 ## Sample outputs — `lora` on `test_hard`
 
 Every failure below is the real logged output. Note how often `plan` is the only
@@ -225,8 +277,9 @@ version of the result.
 - **Category, severity and plan are sampled independently**, so some tickets are
   semantically odd ("how do we rotate our API key" + "everything is down"). That
   makes fields cleanly separable for measurement and the data less realistic.
-- **No hyperparameter sweep.** `r=16, α=32, lr=2e-4` are defensible defaults, not
-  measured optima. Given the loss curve, `r=4` and 1 epoch would likely match it.
+- **No hyperparameter sweep** over `r`, `alpha` or the learning rate — these are defensible
+  defaults, not measured optima. Epochs and quantisation *were* ablated (above); rank was
+  not, and `r=4` is the obvious next thing to try given what 1 epoch did.
 - **One seed, one run.** On 120 rows, one row is 0.8pp; the 0.76 vs 0.83 gap
   between `category` and `severity` is not meaningfully distinguishable.
 - **0.5B, not 1.5B.** The tracker suggested Qwen2.5-1.5B; the measured run is the
@@ -249,8 +302,8 @@ version of the result.
 1. **Fix the `plan` collapse** — it is the one concrete, diagnosed defect.
    Train with the tier names paraphrased or removed from a fraction of examples,
    so the model cannot lean on the literal string.
-2. **One epoch, `r=4`** — the loss curve says the current config is overkill, and
-   less capacity plus fewer epochs is the standard remedy for memorisation.
+2. ~~**One epoch**~~ — **done, and it worked**: category 0.76 → 0.92, escalate 0.82 → 0.91
+   on held-out phrasing. `r=4` is still untested and is the remaining half of this.
 3. **A fourth, harder split** where severity and category are *correlated* as they
    are in reality, to see whether the model learned the policy or the marginals.
 4. Then, and only then, a larger base model. Scaling up before fixing a

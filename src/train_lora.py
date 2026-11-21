@@ -1,8 +1,17 @@
 #!/usr/bin/env python
 """LoRA fine-tune for structured extraction.
 
-    python src/train_lora.py                      # defaults, measured locally
+    python src/train_lora.py                      # LoRA, bf16 base
+    python src/train_lora.py --quantize 4bit       # QLoRA, nf4 4-bit base
     python src/train_lora.py --model Qwen/Qwen2.5-1.5B-Instruct --epochs 3
+
+**LoRA vs QLoRA.** `--quantize 4bit` is the QLoRA recipe: the frozen base is
+loaded in 4-bit NF4 with double quantisation, bf16 compute, and the adapter
+trains on top in bf16. It trades speed for memory -- every forward pass
+dequantises weights on the fly -- and it exists for the case where the base
+model would not fit otherwise. On a 0.5B model it is not needed; it is
+implemented here so the comparison is measured rather than asserted, and the
+README reports what it actually cost.
 
 Device: CUDA if present, else Apple MPS, else CPU. The measured run in the
 README is MPS on an M4; the notebook defaults to CUDA on a Colab T4.
@@ -49,6 +58,7 @@ def pick_device() -> str:
 @dataclass
 class Hyperparams:
     model: str = "Qwen/Qwen2.5-0.5B-Instruct"
+    quantize: str = "none"  # none | 4bit (QLoRA)
     rank: int = 16
     alpha: int = 32
     dropout: float = 0.05
@@ -146,11 +156,22 @@ def main() -> int:
     parser.add_argument("--lr", type=float, default=defaults.learning_rate)
     parser.add_argument("--epochs", type=int, default=defaults.epochs)
     parser.add_argument("--batch-size", type=int, default=defaults.batch_size)
-    parser.add_argument("--out", type=Path, default=ROOT / "adapters" / "qwen05b-triage-lora")
+    parser.add_argument(
+        "--quantize",
+        choices=["none", "4bit"],
+        default="none",
+        help="4bit = QLoRA (NF4 + double quant, bf16 compute)",
+    )
+    parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args()
+
+    if args.out is None:
+        suffix = "qlora" if args.quantize == "4bit" else "lora"
+        args.out = ROOT / "adapters" / f"qwen05b-triage-{suffix}"
 
     hp = Hyperparams(
         model=args.model,
+        quantize=args.quantize,
         rank=args.rank,
         alpha=args.alpha,
         learning_rate=args.lr,
@@ -169,9 +190,41 @@ def main() -> int:
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    model = AutoModelForCausalLM.from_pretrained(hp.model, dtype=dtype)
+    if hp.quantize == "4bit":
+        # The QLoRA recipe, in full:
+        #   nf4            -- a 4-bit datatype whose quantisation levels are spaced
+        #                     for normally-distributed weights, which is what trained
+        #                     weights approximately are. Better than linear int4 here.
+        #   double_quant   -- quantises the quantisation constants too. Saves roughly
+        #                     another 0.4 bits per parameter for almost nothing.
+        #   compute bf16   -- weights are stored in 4-bit and dequantised to bf16 for
+        #                     every matmul. That dequantisation is the speed cost.
+        from transformers import BitsAndBytesConfig
+
+        quant_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=dtype,
+        )
+        model = AutoModelForCausalLM.from_pretrained(
+            hp.model, quantization_config=quant_config, device_map={"": device}
+        )
+        quantised = sum(1 for _, m in model.named_modules() if type(m).__name__ == "Linear4bit")
+        if quantised == 0:
+            raise SystemExit("asked for 4-bit but no Linear4bit layers were created")
+        print(f"QLoRA: {quantised} Linear4bit layers, footprint {model.get_memory_footprint()/1e6:.0f} MB")
+
+        from peft import prepare_model_for_kbit_training
+
+        # Casts layernorms to fp32 and enables input grads. Skipping this is the
+        # usual reason a QLoRA run produces NaNs or simply does not learn.
+        model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=False)
+    else:
+        model = AutoModelForCausalLM.from_pretrained(hp.model, dtype=dtype)
+        model.to(device)
+
     model.config.use_cache = False  # incompatible with gradient checkpointing / training
-    model.to(device)
 
     lora = LoraConfig(
         r=hp.rank,
@@ -227,6 +280,7 @@ def main() -> int:
 
     card = {
         "hyperparams": asdict(hp),
+        "method": "QLoRA (nf4, double quant)" if hp.quantize == "4bit" else "LoRA (bf16 base)",
         "device": device,
         "dtype": str(dtype),
         "platform": f"{platform.platform()} ({platform.machine()})",

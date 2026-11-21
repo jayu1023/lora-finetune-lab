@@ -1,0 +1,474 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "device": "mps",
+  "splits": {
+    "test_seen": {
+      "lora": {
+        "predicted_distribution": {
+          "category": {
+            "api": 30,
+            "ingestion": 27,
+            "billing": 24,
+            "dashboards": 21,
+            "how_to": 13
+          },
+          "severity": {
+            "sev3": 48,
+            "sev2": 34,
+            "sev1": 33
+          },
+          "plan": {
+            "self_serve": 41,
+            "business": 38,
+            "enterprise": 35,
+            "none": 1
+          },
+          "escalate": {
+            "False": 78,
+            "True": 32,
+            "None": 5
+          }
+        },
+        "n": 115,
+        "json_lenient": 1.0,
+        "json_strict": 0.9565217391304348,
+        "exact_match": 0.8695652173913043,
+        "field_accuracy": {
+          "category": 1.0,
+          "severity": 1.0,
+          "plan": 0.991304347826087,
+          "escalate": 0.8782608695652174
+        },
+        "field_accuracy_given_parsed": {
+          "category": 1.0,
+          "severity": 1.0,
+          "plan": 0.991304347826087,
+          "escalate": 0.8782608695652174
+        },
+        "parsed_rows": 115,
+        "median_prompt_tokens": 158,
+        "failures": [
+          {
+            "ticket": "Our Business plan renews monthly. We have an issue: the seat count on our bill does not match. production is fully broken right now.",
+            "expected": {
+              "category": "billing",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev1\",\"plan\":\"business\",\"escalate\":true}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Not sure if this is the right place, but is there a way to rename a workspace. To be clear nothing works at all and it is affecting every cu",
+            "expected": {
+              "category": "how_to",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"how_to\",\"severity\":\"sev1\",\"plan\":\"business\"}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "We are on the Business tier. We have an issue: how do we rotate our API key. it is cosmetic as far as we can tell.",
+            "expected": {
+              "category": "how_to",
+              "severity": "sev3",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"how_to\",\"severity\":\"sev3\",\"plan\":\"business\"}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Ticket: we were charged twice this month Impact: this is a complete outage and we are losing data Account: we are just a small self-serve ac",
+            "expected": {
+              "category": "billing",
+              "severity": "sev1",
+              "plan": "self_serve",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev1\",\"plan\":\"self_serve\",\"escalate\":true}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Hi \u2014 the chart renders blank for last week. production is fully broken right now. For context, we are a Business plan customer.",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev1\",\"plan\":\"business\",\"escalate\":true}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Not sure if this is the right place, but our API calls are timing out. To be clear a major feature is unusable for a subset of our users. We",
+            "expected": {
+              "category": "api",
+              "severity": "sev2",
+              "plan": "enterprise",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"api\",\"severity\":\"sev2\",\"plan\":\"enterprise\",\"escalate\":false}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "We are a Business plan customer. We have an issue: the REST endpoint returns 500 intermittently. nothing works at all and it is affecting ev",
+            "expected": {
+              "category": "api",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"api\",\"severity\":\"sev1\",\"plan\":\"business\",\"escalate\":false}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Ticket: the webhook signature check keeps failing Impact: nothing works at all and it is affecting every customer we have Account: we upgrad",
+            "expected": {
+              "category": "api",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"api\",\"severity\":\"sev1\",\"plan\":\"business\"}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          }
+        ],
+        "condition": "lora",
+        "eval_seconds": 14.1
+      }
+    },
+    "test_unseen": {
+      "lora": {
+        "predicted_distribution": {
+          "category": {
+            "how_to": 33,
+            "api": 25,
+            "billing": 24,
+            "dashboards": 20,
+            "ingestion": 18
+          },
+          "severity": {
+            "sev2": 51,
+            "sev3": 41,
+            "sev1": 28
+          },
+          "plan": {
+            "self_serve": 46,
+            "business": 42,
+            "enterprise": 32
+          },
+          "escalate": {
+            "False": 86,
+            "True": 22,
+            "None": 12
+          }
+        },
+        "n": 120,
+        "json_lenient": 1.0,
+        "json_strict": 0.9,
+        "exact_match": 0.7333333333333333,
+        "field_accuracy": {
+          "category": 1.0,
+          "severity": 0.9583333333333334,
+          "plan": 0.9416666666666667,
+          "escalate": 0.8083333333333333
+        },
+        "field_accuracy_given_parsed": {
+          "category": 1.0,
+          "severity": 0.9583333333333334,
+          "plan": 0.9416666666666667,
+          "escalate": 0.8083333333333333
+        },
+        "parsed_rows": 120,
+        "median_prompt_tokens": 168,
+        "failures": [
+          {
+            "ticket": "Forwarding from our ops channel:  > How do we rotate our API key > Everything is down for all of our users  Adding that we are a Business pl",
+            "expected": {
+              "category": "how_to",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"how_to\",\"severity\":\"sev2\",\"plan\":\"business\",\"escalate\":false}",
+            "wrong_fields": [
+              "severity"
+            ]
+          },
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: the schema registry is refusing valid events. Since then we have a workaround bu",
+            "expected": {
+              "category": "ingestion",
+              "severity": "sev2",
+              "plan": "self_serve",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"ingestion\",\"severity\":\"sev2\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Can someone look at this? A shared dashboard link 404s for my team \u2014 and to be clear, we have a workaround but it is painful. We are the acc",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev2",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev2\",\"plan\":\"business\"}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Can someone look at this? The date filter resets on every refresh \u2014 and to be clear, this is a complete outage and we are losing data. We ar",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev1",
+              "plan": "enterprise",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev1\",\"plan\":\"self_serve\",\"escalate\":true}",
+            "wrong_fields": [
+              "plan",
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: the seat count on our bill does not match. Since then it is badly degraded but n",
+            "expected": {
+              "category": "billing",
+              "severity": "sev2",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev2\",\"plan\":\"business\"}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Can someone look at this? The SDK is getting 429s well under our quota \u2014 and to be clear, nothing works at all and it is affecting every cus",
+            "expected": {
+              "category": "api",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"api\",\"severity\":\"sev1\",\"plan\":\"business\"}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Can someone look at this? The chart renders blank for last week \u2014 and to be clear, low priority, whenever you get to it. We are the account ",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev3",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev3\",\"plan\":\"business\"}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Forwarding from our ops channel:  > The ingest endpoint is rejecting our payloads > A major feature is unusable for a subset of our users  A",
+            "expected": {
+              "category": "ingestion",
+              "severity": "sev2",
+              "plan": "self_serve",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"ingestion\",\"severity\":\"sev2\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "escalate"
+            ]
+          }
+        ],
+        "condition": "lora",
+        "eval_seconds": 14.1
+      }
+    },
+    "test_hard": {
+      "lora": {
+        "predicted_distribution": {
+          "category": {
+            "billing": 42,
+            "dashboards": 25,
+            "api": 17,
+            "how_to": 16,
+            "ingestion": 12,
+            "telemetry": 6,
+            "tinge": 2
+          },
+          "severity": {
+            "sev2": 62,
+            "sev3": 45,
+            "sev1": 13
+          },
+          "plan": {
+            "self_serve": 118,
+            "commercial": 2
+          },
+          "escalate": {
+            "False": 110,
+            "True": 10
+          }
+        },
+        "n": 120,
+        "json_lenient": 1.0,
+        "json_strict": 1.0,
+        "exact_match": 0.19166666666666668,
+        "field_accuracy": {
+          "category": 0.7583333333333333,
+          "severity": 0.7833333333333333,
+          "plan": 0.35,
+          "escalate": 0.8
+        },
+        "field_accuracy_given_parsed": {
+          "category": 0.7583333333333333,
+          "severity": 0.7833333333333333,
+          "plan": 0.35,
+          "escalate": 0.8
+        },
+        "parsed_rows": 120,
+        "median_prompt_tokens": 175,
+        "failures": [
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: could you point us at the documentation for adding a colleague. Since then trivi",
+            "expected": {
+              "category": "how_to",
+              "severity": "sev3",
+              "plan": "enterprise",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"how_to\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "plan"
+            ]
+          },
+          {
+            "ticket": "Forwarding from our ops channel:  > There is a discrepancy between the statement and what we expected to pay > Nobody in the organisation ca",
+            "expected": {
+              "category": "billing",
+              "severity": "sev1",
+              "plan": "self_serve",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev2\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "severity"
+            ]
+          },
+          {
+            "ticket": "Can someone look at this? A tile we built last month now comes up empty \u2014 and to be clear, purely a tidiness matter, nobody is held up. We a",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev3",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "plan"
+            ]
+          },
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: a tile we built last month now comes up empty. Since then trivial, and it affect",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev3",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "plan"
+            ]
+          },
+          {
+            "ticket": "Forwarding from our ops channel:  > Signature verification on our callbacks fails every time > An important workflow is unusable although ot",
+            "expected": {
+              "category": "api",
+              "severity": "sev2",
+              "plan": "enterprise",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"api\",\"severity\":\"sev2\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "plan",
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: a tile we built last month now comes up empty. Since then purely a tidiness matt",
+            "expected": {
+              "category": "dashboards",
+              "severity": "sev3",
+              "plan": "enterprise",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"dashboards\",\"severity\":\"sev3\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "plan"
+            ]
+          },
+          {
+            "ticket": "Following up on my earlier message. Still the same problem: the collector appears to be discarding a portion of what we emit. Since then an ",
+            "expected": {
+              "category": "ingestion",
+              "severity": "sev2",
+              "plan": "enterprise",
+              "escalate": true
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev2\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "category",
+              "plan",
+              "escalate"
+            ]
+          },
+          {
+            "ticket": "Forwarding from our ops channel:  > Our finance team is disputing a line item on the latest receipt > Nobody in the organisation can do anyt",
+            "expected": {
+              "category": "billing",
+              "severity": "sev1",
+              "plan": "business",
+              "escalate": false
+            },
+            "raw_output": "{\"category\":\"billing\",\"severity\":\"sev2\",\"plan\":\"self_serve\",\"escalate\":false}",
+            "wrong_fields": [
+              "severity",
+              "plan"
+            ]
+          }
+        ],
+        "condition": "lora",
+        "eval_seconds": 14.5
+      }
+    }
+  }
+}
